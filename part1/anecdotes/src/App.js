@@ -19,13 +19,6 @@ const App = () => {
     return Math.floor(Math.random() * 7)
   }
 
-  const getMostPopular = () => {
-    const max = Math.max(...allVotes)
-    const index = allVotes.indexOf(max)
-    console.log(max)
-    return index
-  }
-
   const incrementVote = (selected) => {
     // increment vote
     const arrayCopy = [...allVotes]
