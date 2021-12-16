@@ -114,7 +114,7 @@ const App = () => {
           .catch((error) => {
             setNotification({
               error: true,
-              message: `Error updating ${newName}'s number: ${error}`,
+              message: error.response.data.error,
             })
             setTimeout(() => {
               setNotification(null)
@@ -143,7 +143,7 @@ const App = () => {
         .catch((error) => {
           setNotification({
             error: true,
-            message: `Error adding ${newName} to the phonebook: ${error}`,
+            message: error.response.data.error,
           })
           setTimeout(() => {
             setNotification(null)
