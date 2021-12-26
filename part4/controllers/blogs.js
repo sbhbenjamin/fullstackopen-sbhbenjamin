@@ -5,8 +5,12 @@ const User = require('../models/user')
 const middleware = require('../utils/middleware')
 
 blogsRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1})
-  response.json(blogs.map(blog => blog.toJSON()))
+  const blogs = await Blog.find({}).populate('user', {
+    username: 1,
+    name: 1,
+    id: 1,
+  })
+  response.json(blogs.map((blog) => blog.toJSON()))
 })
 
 blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
@@ -15,39 +19,43 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   }
 
   const user = request.user
-  
+
   const blog = new Blog({
     title: request.body.title,
     url: request.body.url,
     likes: request.body.likes,
-    author: user.name,
-    user: user._id
+    author: request.body.author,
+    user: user._id,
   })
-  console.log('1')
   const savedBlog = await blog.save()
   user.blogs = user.blogs.concat(savedBlog._id)
-  console.log('2')
   console.log(user)
   await user.save()
-  console.log('3')
   response.json(savedBlog.toJSON())
 })
 
-blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) => {
-  const user = request.user
-  const blog = await Blog.findById(request.params.id)
+blogsRouter.delete(
+  '/:id',
+  middleware.userExtractor,
+  async (request, response) => {
+    const user = request.user
+    const blog = await Blog.findById(request.params.id)
 
-  if (!user) {
-    response.status(401).json({ error: 'unauthorized, not logged in' })
-  }
+    if (!user) {
+      response.status(401).json({ error: 'unauthorized, not logged in' })
+    }
 
-  if (blog.user.toString() === user._id.toString()) {
-    await Blog.findByIdAndRemove(request.params.id)
-    response.status(204).end()
-  } else {
-    response.status(401).json({ error: 'unauthorized, not owner of blog post' })
+    if (blog.user.toString() === user._id.toString()) {
+      const removedBlog = await Blog.findByIdAndRemove(request.params.id)
+      user.blogs = user.blogs.filter(blog => blog.id !== removedBlog._id)
+      response.status(204).end()
+    } else {
+      response
+        .status(401)
+        .json({ error: 'unauthorized, not owner of blog post' })
+    }
   }
-})
+)
 
 blogsRouter.put('/:id', async (request, response) => {
   const blog = {
@@ -56,7 +64,9 @@ blogsRouter.put('/:id', async (request, response) => {
     url: request.body.url,
     likes: request.body.likes,
   }
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
+    new: true,
+  })
   response.json(updatedBlog.toJSON())
 })
 
