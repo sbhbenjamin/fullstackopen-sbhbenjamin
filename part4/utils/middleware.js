@@ -17,7 +17,6 @@ const tokenExtractor = (req, res, next) => {
   if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
     req.token = authorization.substring(7)
   }
-
   next()
 }
 
@@ -48,7 +47,7 @@ const errorHandler = (error, request, response, next) => {
       error: 'malformatted id'
     })
   } else if (error.name === 'ValidationError') {
-    console.log('Valoidation error')
+    console.log('Validation error')
     return response.status(400).json({
       error: error.message 
     })

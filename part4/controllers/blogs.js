@@ -1,14 +1,30 @@
-const jwt = require('jsonwebtoken')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const middleware = require('../utils/middleware')
+
+blogsRouter.get('/:id', async (request, response) => {
+  const blog = await Blog.findById(request.params.id)
+    .populate('user', {
+      username: 1,
+      name: 1,
+      id: 1,
+    })
+    .populate('comments', {
+      message: 1,
+      user: 1
+    })
+  response.json(blog.toJSON())
+})
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user', {
     username: 1,
     name: 1,
     id: 1,
+  }).populate('comments', {
+    message: 1,
+    user: 1
   })
   response.json(blogs.map((blog) => blog.toJSON()))
 })
@@ -18,7 +34,7 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     return response.status(400).end()
   }
 
-  const user = request.user
+  const user = await User.findById(request.user.id)
 
   const blog = new Blog({
     title: request.body.title,
@@ -27,10 +43,10 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     author: request.body.author,
     user: user._id,
   })
+
   const savedBlog = await blog.save()
-  user.blogs = user.blogs.concat(savedBlog._id)
-  console.log(user)
-  await user.save()
+  const newBlogs = user.blogs.concat(savedBlog._id)
+  await User.findOneAndUpdate({ id: user.id }, { blogs: newBlogs })
   response.json(savedBlog.toJSON())
 })
 
