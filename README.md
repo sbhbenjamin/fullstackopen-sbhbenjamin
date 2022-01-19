@@ -4,7 +4,7 @@
  
 A submission repository for the [University of Helsinki's Full Stack Open 2021 course](https://fullstackopen.com/en/), which teaches React, Redux, Node.js, MongoDB, GraphQL and TypeScript. This course introduces modern JavaScript-based web development. The main focus is on building single page applications with ReactJS that use REST APIs built with Node.js
 
-Over Winter 2021, I completed 7 ETCS credits, whereby I used 145 hours! It was truly an enriching experience where I could polish and refine my web development skills, and at the same time learn best practices and new technologies.
+Over Winter 2021, I completed 8 ETCS credits, whereby I used 171 hours! It was truly an enriching experience where I could polish and refine my web development skills, and at the same time learn best practices and new technologies.
 
 ## Exercises Completed, Hours Spent, and Link to Repo
 
