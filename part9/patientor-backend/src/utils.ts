@@ -49,12 +49,16 @@ const parseGender = (gender: unknown): Gender => {
   return gender;
 };
 
-const isDiagnosis = (diagnosis: any): diagnosis is Diagnose => {
-  return 'code' in diagnosis && 'name' in diagnosis;
+// const isDiagnosis = (diagnosis: any): diagnosis is Diagnose => {
+//   return 'code' in diagnosis && 'name' in diagnosis;
+// };
+
+const isDiagnosisCode = (diagnosis: any): diagnosis is Diagnose['code'] => {
+  return isString(diagnosis);
 };
 
 const parseDiagnosis = (diagnosis: any): Array<Diagnose> => {
-  if (Array.isArray(diagnosis) && diagnosis.every((d) => isDiagnosis(d))) {
+  if (Array.isArray(diagnosis) && diagnosis.every((d) => isDiagnosisCode(d))) {
     return diagnosis as Array<Diagnose>;
   }
   throw new Error('Incorrect diagnose ' + diagnosis);
